@@ -27,4 +27,5 @@ def service_worker():
 @app.post("/chat")
 def chat(pergunta: str):
     resposta = jarvas.responder(pergunta)
-    return {"resposta": resposta}
+    return {"resposta": resposta}fastapi
+uvicorn
