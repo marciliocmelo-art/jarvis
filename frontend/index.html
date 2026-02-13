@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Jarvas AI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="/static/manifest.json">
+<meta name="theme-color" content="#0f172a">
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #0f172a;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+header {
+    padding: 20px;
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+    background: #111827;
+}
+
+#chat {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.mensagem {
+    margin-bottom: 15px;
+    padding: 12px;
+    border-radius: 10px;
+    max-width: 80%;
+}
+
+.user {
+    background: #2563eb;
+    align-self: flex-end;
+}
+
+.bot {
+    background: #334155;
+    align-self: flex-start;
+}
+
+#barra {
+    display: flex;
+    padding: 15px;
+    background: #111827;
+}
+
+#mensagem {
+    flex: 1;
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    font-size: 16px;
+}
+
+button {
+    margin-left: 10px;
+    padding: 12px 18px;
+    border: none;
+    border-radius: 8px;
+    background: #2563eb;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+Jarvas AI — Assistente de Marcílio
+</header>
+
+<div id="chat"></div>
+
+<div id="barra">
+<input type="text" id="mensagem" placeholder="Digite sua mensagem..." autocomplete="off">
+<button onclick="enviar()">Enviar</button>
+</div>
+
+<script>
+async function enviar() {
+
+    const input = document.getElementById("mensagem");
+    const texto = input.value.trim();
+    if (!texto) return;
+
+    adicionarMensagem(texto, "user");
+    input.value = "";
+
+    try {
+        const resposta = await fetch("/chat?pergunta=" + encodeURIComponent(texto), {
+            method: "POST"
+        });
+
+        const dados = await resposta.json();
+        adicionarMensagem(dados.resposta, "bot");
+
+    } catch (erro) {
+        adicionarMensagem("Erro ao conectar com Jarvas.", "bot");
+    }
+}
+
+function adicionarMensagem(texto, tipo) {
+    const chat = document.getElementById("chat");
+    const div = document.createElement("div");
+    div.className = "mensagem " + tipo;
+    div.innerText = texto;
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
+}
+
+document.getElementById("mensagem").addEventListener("keydown", function(event) {
+    if (event.key === "Enter") {
+        event.preventDefault();
+        enviar();
+    }
+});
+
+/* REGISTRO CORRETO */
+if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/sw.js")
+        .then(() => console.log("Service Worker registrado"))
+        .catch(err => console.log("Erro SW:", err));
+}
+</script>
+
+</body>
+</html>
