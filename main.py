@@ -1,31 +1,5 @@
-from fastapi import FastAPI
-from fastapi.responses import FileResponse
-from fastapi.staticfiles import StaticFiles
-import jarvas
-
-app = FastAPI(title="Jarvas AI")
-
-# Monta a pasta frontend como estática
-app.mount("/static", StaticFiles(directory="frontend"), name="static")
-
-# Página principal
-@app.get("/")
-def home():
-    return FileResponse("frontend/index.html")
-
-# Manifest (OBRIGATÓRIO para PWA)
-@app.get("/manifest.json")
-def manifest():
-    return FileResponse("frontend/manifest.json")
-
-# Service Worker
-@app.get("/sw.js")
-def service_worker():
-    return FileResponse("frontend/sw.js")
-
-# Chat
-@app.post("/chat")
-def chat(pergunta: str):
-    resposta = jarvas.responder(pergunta)
-    return {"resposta": resposta}fastapi
-uvicorn
+fastapi==0.110.0
+uvicorn[standard]==0.29.0
+jinja2==3.1.3
+python-multipart==0.0.9
+pydantic==2.6.4
