@@ -1,22 +1,23 @@
+import os
 from fastapi import FastAPI
-from fastapi.responses import FileResponse
-import jarvas
+from openai import OpenAI
 
-app = FastAPI()
+app = FastAPI(title="Jarvis AI")
+
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 @app.get("/")
 def home():
-    return {"status": "Jarvis online 🚀"}
-
-@app.get("/manifest.json")
-def manifest():
-    return FileResponse("frontend/manifest.json")
-
-@app.get("/sw.js")
-def service_worker():
-    return FileResponse("frontend/sw.js")
+    return {"status": "Jarvis AI online 🚀"}
 
 @app.post("/chat")
 def chat(pergunta: str):
-    resposta = jarvas.responder(pergunta)
-    return {"resposta": resposta}
+    resposta = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": "Você é Jarvis, assistente pessoal de Marcílio Melo."},
+            {"role": "user", "content": pergunta}
+        ]
+    )
+
+    return {"resposta": resposta.choices[0].message.content}
