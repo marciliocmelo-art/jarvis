@@ -1,0 +1,4 @@
+venv/
+.env
+jarvis.db
+__pycache__/
