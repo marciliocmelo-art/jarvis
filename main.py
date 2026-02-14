@@ -15,7 +15,11 @@ SECRET_KEY = "supersecretkey"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
-pwd_context = CryptContext(schemes=["bcrypt_sha256"], deprecated="auto")
+# 🔥 SEM BCRYPT
+pwd_context = CryptContext(
+    schemes=["pbkdf2_sha256"],
+    deprecated="auto"
+)
 
 app = FastAPI()
 
@@ -62,10 +66,10 @@ class User(BaseModel):
 # ==========================
 
 def hash_password(password: str):
-    return pwd_context.hash(password[:72])
+    return pwd_context.hash(password)
 
 def verify_password(plain, hashed):
-    return pwd_context.verify(plain[:72], hashed)
+    return pwd_context.verify(plain, hashed)
 
 def create_token(data: dict):
     to_encode = data.copy()
