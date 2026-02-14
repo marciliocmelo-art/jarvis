@@ -8,14 +8,14 @@ import sqlite3
 import os
 
 # ==========================
-# CONFIG
+# CONFIGURAÇÕES
 # ==========================
 
 SECRET_KEY = "supersecretkey"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
-# 🔥 SEM BCRYPT
+# 🔥 SEM BCRYPT (NÃO TEM LIMITE DE 72 BYTES)
 pwd_context = CryptContext(
     schemes=["pbkdf2_sha256"],
     deprecated="auto"
@@ -32,7 +32,7 @@ app.add_middleware(
 )
 
 # ==========================
-# DATABASE (Render safe)
+# BANCO DE DADOS
 # ==========================
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -54,7 +54,7 @@ def init_db():
 init_db()
 
 # ==========================
-# MODELS
+# MODELOS
 # ==========================
 
 class User(BaseModel):
@@ -62,13 +62,13 @@ class User(BaseModel):
     password: str
 
 # ==========================
-# UTILS
+# FUNÇÕES
 # ==========================
 
 def hash_password(password: str):
     return pwd_context.hash(password)
 
-def verify_password(plain, hashed):
+def verify_password(plain: str, hashed: str):
     return pwd_context.verify(plain, hashed)
 
 def create_token(data: dict):
@@ -78,12 +78,12 @@ def create_token(data: dict):
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 # ==========================
-# ROUTES
+# ROTAS
 # ==========================
 
 @app.get("/")
 def root():
-    return {"status": "Jarvis SaaS online"}
+    return {"status": "VERSAO FINAL NOVA"}
 
 @app.post("/register")
 def register(user: User):
@@ -107,7 +107,7 @@ def register(user: User):
         raise HTTPException(status_code=400, detail="Usuário já existe")
 
     except Exception as e:
-        print("ERRO REAL:", str(e))
+        print("ERRO REAL REGISTER:", str(e))
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/login")
