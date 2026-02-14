@@ -1,12 +1,6 @@
 fastapi
-
 uvicorn
-
 openai
-
 python-dotenv
-
-passlib\[bcrypt]
-
 python-jose
-
+passlib
