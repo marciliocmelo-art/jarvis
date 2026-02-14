@@ -17,18 +17,15 @@ import os
 
 load_dotenv()
 
-SECRET_KEY = "super_secret_key_jwt_change_in_production"
+SECRET_KEY = os.getenv("SECRET_KEY", "dev_secret")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 api_key = os.getenv("OPENAI_API_KEY")
-if api_key:
-    api_key = api_key.strip()
-
 if not api_key:
     raise ValueError("OPENAI_API_KEY não definida")
 
-client = OpenAI(api_key=api_key)
+client = OpenAI(api_key=api_key.strip())
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -49,10 +46,12 @@ app.add_middleware(
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # ==========================
-# BANCO
+# BANCO SQLITE
 # ==========================
 
-conn = sqlite3.connect("jarvis.db", check_same_thread=False)
+DB_PATH = "jarvis.db"
+
+conn = sqlite3.connect(DB_PATH, check_same_thread=False)
 cursor = conn.cursor()
 
 cursor.execute("""
@@ -92,7 +91,7 @@ class ChatRequest(BaseModel):
     message: str
 
 # ==========================
-# FUNÇÕES JWT
+# JWT
 # ==========================
 
 def create_access_token(data: dict):
@@ -135,18 +134,25 @@ def home():
 
 @app.post("/register")
 def register(data: RegisterRequest):
-    hashed_password = pwd_context.hash(data.password)
-
     try:
+        # 🔐 Limite bcrypt 72 bytes
+        password = data.password[:72]
+        hashed_password = pwd_context.hash(password)
+
         cursor.execute("""
             INSERT INTO users (email, password_hash, created_at)
             VALUES (?, ?, ?)
         """, (data.email, hashed_password, datetime.utcnow().isoformat()))
         conn.commit()
-    except:
+
+        return {"message": "Usuário criado com sucesso"}
+
+    except sqlite3.IntegrityError:
         raise HTTPException(status_code=400, detail="Email já cadastrado")
 
-    return {"message": "Usuário criado com sucesso"}
+    except Exception as e:
+        print("ERRO REGISTER:", e)
+        raise HTTPException(status_code=500, detail="Erro interno no cadastro")
 
 # --------------------------
 # LOGIN
@@ -154,69 +160,78 @@ def register(data: RegisterRequest):
 
 @app.post("/login")
 def login(data: LoginRequest):
-    cursor.execute("""
-        SELECT id, password_hash FROM users WHERE email = ?
-    """, (data.email,))
-    user = cursor.fetchone()
+    try:
+        cursor.execute("""
+            SELECT id, password_hash FROM users WHERE email = ?
+        """, (data.email,))
+        user = cursor.fetchone()
 
-    if not user:
-        raise HTTPException(status_code=400, detail="Usuário não encontrado")
+        if not user:
+            raise HTTPException(status_code=400, detail="Usuário não encontrado")
 
-    user_id, password_hash = user
+        user_id, password_hash = user
 
-    if not pwd_context.verify(data.password, password_hash):
-        raise HTTPException(status_code=400, detail="Senha incorreta")
+        # 🔐 Limite bcrypt 72 bytes
+        if not pwd_context.verify(data.password[:72], password_hash):
+            raise HTTPException(status_code=400, detail="Senha incorreta")
 
-    token = create_access_token({"user_id": user_id})
+        token = create_access_token({"user_id": user_id})
 
-    return {"access_token": token}
+        return {"access_token": token}
+
+    except Exception as e:
+        print("ERRO LOGIN:", e)
+        raise HTTPException(status_code=500, detail="Erro interno no login")
 
 # --------------------------
-# CHAT PROTEGIDO
+# CHAT
 # --------------------------
 
 @app.post("/chat")
 def chat(data: ChatRequest, user_id: int = Depends(get_current_user)):
+    try:
+        cursor.execute("""
+            SELECT role, content FROM conversations
+            WHERE user_id = ?
+            ORDER BY id ASC
+        """, (user_id,))
+        
+        history = cursor.fetchall()
 
-    cursor.execute("""
-        SELECT role, content FROM conversations
-        WHERE user_id = ?
-        ORDER BY id ASC
-    """, (user_id,))
-    
-    history = cursor.fetchall()
+        conversation = [
+            {"role": "system", "content": "Você é Jarvis, assistente estratégico."}
+        ]
 
-    conversation = [
-        {"role": "system", "content": "Você é Jarvis, assistente estratégico."}
-    ]
+        for role, content in history:
+            conversation.append({"role": role, "content": content})
 
-    for role, content in history:
-        conversation.append({"role": role, "content": content})
+        conversation.append({"role": "user", "content": data.message})
 
-    conversation.append({"role": "user", "content": data.message})
+        response = client.responses.create(
+            model="gpt-4.1-mini",
+            input=conversation
+        )
 
-    response = client.responses.create(
-        model="gpt-4.1-mini",
-        input=conversation
-    )
+        assistant_message = response.output_text
+        now = datetime.utcnow().isoformat()
 
-    assistant_message = response.output_text
+        cursor.execute("""
+            INSERT INTO conversations (user_id, role, content, timestamp)
+            VALUES (?, ?, ?, ?)
+        """, (user_id, "user", data.message, now))
 
-    now = datetime.utcnow().isoformat()
+        cursor.execute("""
+            INSERT INTO conversations (user_id, role, content, timestamp)
+            VALUES (?, ?, ?, ?)
+        """, (user_id, "assistant", assistant_message, now))
 
-    cursor.execute("""
-        INSERT INTO conversations (user_id, role, content, timestamp)
-        VALUES (?, ?, ?, ?)
-    """, (user_id, "user", data.message, now))
+        conn.commit()
 
-    cursor.execute("""
-        INSERT INTO conversations (user_id, role, content, timestamp)
-        VALUES (?, ?, ?, ?)
-    """, (user_id, "assistant", assistant_message, now))
+        return {"response": assistant_message}
 
-    conn.commit()
-
-    return {"response": assistant_message}
+    except Exception as e:
+        print("ERRO CHAT:", e)
+        raise HTTPException(status_code=500, detail="Erro interno no chat")
 
 # --------------------------
 # RESET
