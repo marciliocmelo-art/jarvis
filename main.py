@@ -5,6 +5,7 @@ from pydantic import BaseModel
 from passlib.context import CryptContext
 from jose import jwt, JWTError
 from datetime import datetime, timedelta
+from openai import OpenAI
 import sqlite3
 import os
 
@@ -16,13 +17,16 @@ SECRET_KEY = "supersecretkey"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+
+client = OpenAI(api_key=OPENAI_API_KEY)
+
 pwd_context = CryptContext(
     schemes=["pbkdf2_sha256"],
     deprecated="auto"
 )
 
 app = FastAPI()
-
 security = HTTPBearer()
 
 app.add_middleware(
@@ -63,6 +67,9 @@ class User(BaseModel):
     email: str
     password: str
 
+class ChatRequest(BaseModel):
+    message: str
+
 # ======================
 # UTILS
 # ======================
@@ -93,7 +100,7 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(securit
 
 @app.get("/")
 def root():
-    return {"status": "JARVIS PRO AUTH ONLINE"}
+    return {"status": "JARVIS AI ONLINE"}
 
 @app.post("/register")
 def register(user: User):
@@ -136,8 +143,21 @@ def login(user: User):
         "token_type": "bearer"
     }
 
-@app.get("/protected")
-def protected_route(current_user: str = Depends(get_current_user)):
+@app.post("/chat")
+def chat(request: ChatRequest, current_user: str = Depends(get_current_user)):
+
+    if not OPENAI_API_KEY:
+        raise HTTPException(status_code=500, detail="OpenAI API Key não configurada")
+
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[
+            {"role": "system", "content": "Você é Jarvis, um assistente profissional."},
+            {"role": "user", "content": request.message}
+        ]
+    )
+
     return {
-        "message": f"Bem-vindo {current_user}, você está autenticado."
+        "user": current_user,
+        "response": response.choices[0].message.content
     }
