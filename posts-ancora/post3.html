@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<style>
+  @font-face {
+    font-family: 'Lora';
+    src: url('/usr/share/fonts/truetype/google-fonts/Lora-Variable.ttf');
+    font-weight: 400 700;
+  }
+  @font-face {
+    font-family: 'Poppins';
+    src: url('/usr/share/fonts/truetype/google-fonts/Poppins-Regular.ttf');
+    font-weight: 400;
+  }
+  @font-face {
+    font-family: 'Poppins';
+    src: url('/usr/share/fonts/truetype/google-fonts/Poppins-Medium.ttf');
+    font-weight: 500;
+  }
+  @font-face {
+    font-family: 'Poppins';
+    src: url('/usr/share/fonts/truetype/google-fonts/Poppins-Bold.ttf');
+    font-weight: 700;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 1080px; height: 1350px; position: relative; overflow: hidden; font-family: 'Poppins', sans-serif; }
+  .bg {
+    position: absolute; top: 0; left: 0; width: 1080px; height: 1350px;
+    object-fit: cover;
+  }
+  .shade-top {
+    position: absolute; top: 0; left: 0; width: 1080px; height: 900px;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.55) 40%, rgba(0,0,0,0.15) 100%);
+  }
+  .shade-bottom {
+    position: absolute; bottom: 0; left: 0; width: 1080px; height: 460px;
+    background: linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.6) 55%, rgba(0,0,0,0) 100%);
+  }
+  .frame {
+    position: absolute; top: 36px; left: 36px; right: 36px; bottom: 36px;
+    border: 1.5px solid rgba(216,178,94,0.55);
+  }
+  .header {
+    position: absolute; top: 80px; left: 0; width: 1080px; text-align: center;
+    color: #d8b25e; font-family: 'Poppins', sans-serif; font-weight: 500;
+    font-size: 27px; letter-spacing: 6px;
+  }
+  .verse-tag {
+    position: absolute; top: 140px; left: 0; width: 1080px; text-align: center;
+    color: rgba(216,178,94,0.85); font-family: 'Poppins', sans-serif; font-weight: 500;
+    font-size: 22px; letter-spacing: 3px;
+  }
+  .hook {
+    position: absolute; top: 560px; left: 80px; width: 920px; text-align: center;
+    color: #f3e6c8; font-family: 'Lora', serif; font-weight: 600;
+    font-size: 60px; line-height: 1.18;
+  }
+  .hook .accent { color: #d8b25e; }
+  .divider {
+    position: absolute; top: 970px; left: 440px; width: 200px; height: 1.5px;
+    background: rgba(216,178,94,0.6);
+  }
+  .subtext {
+    position: absolute; top: 1000px; left: 130px; width: 820px; text-align: center;
+    color: #e9ddc4; font-family: 'Poppins', sans-serif; font-weight: 300;
+    font-size: 26px; line-height: 1.5;
+  }
+  .cta {
+    position: absolute; top: 1160px; left: 340px; width: 400px; text-align: center;
+    border: 1.5px solid #d8b25e; border-radius: 40px; padding: 18px 0;
+    color: #d8b25e; font-family: 'Poppins', sans-serif; font-weight: 500; font-size: 26px;
+  }
+  .handle {
+    position: absolute; bottom: 55px; left: 0; width: 1080px; text-align: center;
+    color: rgba(216,178,94,0.55); font-family: 'Poppins', sans-serif; font-weight: 400;
+    font-size: 22px; letter-spacing: 2px;
+  }
+</style>
+</head>
+<body>
+  <img class="bg" src="bg-jornada.png">
+  <div class="shade-top"></div>
+  <div class="shade-bottom"></div>
+  <div class="frame"></div>
+  <div class="header">✝ ÂNCORA DA ALMA ✝</div>
+  <div class="verse-tag">ÊXODO 13:21</div>
+  <div class="hook">Deus nunca disse<br>que ia ser fácil<br><span class="accent">sair do Egito.</span></div>
+  <div class="divider"></div>
+  <div class="subtext">Deus tirou o povo da escravidão, mas não<br>tirou o deserto do caminho. Ele foi na frente,<br>em nuvem de dia e fogo de noite.</div>
+  <div class="cta">Salve para os dias difíceis</div>
+  <div class="handle">@ancoradealma</div>
+</body>
+</html>
