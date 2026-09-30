@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  @font-face { font-family: 'Lora'; src: url('/usr/share/fonts/truetype/google-fonts/Lora-Variable.ttf'); font-weight: 400 700; }
+  @font-face { font-family: 'Poppins'; src: url('/usr/share/fonts/truetype/google-fonts/Poppins-Regular.ttf'); font-weight: 400; }
+  @font-face { font-family: 'Poppins'; src: url('/usr/share/fonts/truetype/google-fonts/Poppins-Medium.ttf'); font-weight: 500; }
+  @font-face { font-family: 'Poppins'; src: url('/usr/share/fonts/truetype/google-fonts/Poppins-Bold.ttf'); font-weight: 700; }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; background: #0a0806; }
+
+  .canvas { width: 1080px; height: 1350px; position: relative; font-family: 'Poppins', sans-serif; }
+
+  .bg {
+    position: absolute; top: 0; left: 0; width: 1080px; height: 1350px;
+    object-fit: cover; object-position: center 25%;
+    filter: saturate(0.92) contrast(1.03);
+  }
+
+  .shade-top {
+    position: absolute; top: 0; left: 0; width: 1080px; height: 900px;
+    background: linear-gradient(180deg, rgba(6,5,4,0.97) 0%, rgba(8,6,5,0.88) 30%, rgba(10,7,5,0.35) 68%, rgba(10,7,5,0) 100%);
+  }
+  .shade-bottom {
+    position: absolute; bottom: 0; left: 0; width: 1080px; height: 460px;
+    background: linear-gradient(0deg, rgba(5,4,3,0.95) 0%, rgba(6,5,4,0.55) 55%, rgba(6,5,4,0) 100%);
+  }
+  .frame {
+    position: absolute; top: 36px; left: 36px; right: 36px; bottom: 36px;
+    border: 1px solid rgba(197,157,79,0.35); pointer-events: none;
+  }
+
+  .brand {
+    position: absolute; top: 64px; left: 0; width: 1080px; text-align: center;
+    color: #d8b25e; font-weight: 500; font-size: 27px; letter-spacing: 6px; text-transform: uppercase;
+  }
+  .brand .cross { color: #c59d4f; margin: 0 10px; font-size: 24px; }
+
+  .verse-tag {
+    position: absolute; top: 128px; left: 0; width: 1080px; text-align: center;
+    color: rgba(230,214,176,0.65); font-weight: 400; font-size: 21px; letter-spacing: 2px;
+  }
+
+  .hook {
+    position: absolute; top: 460px; left: 90px; width: 900px;
+    color: #f3e6c8; font-family: 'Lora', serif; font-weight: 600; font-size: 60px; line-height: 1.24;
+    text-shadow: 0 4px 24px rgba(0,0,0,0.65);
+  }
+  .hook .accent { color: #d8b25e; }
+
+  .divider { position: absolute; top: 745px; left: 90px; width: 120px; height: 3px; background: #c59d4f; }
+
+  .subtext {
+    position: absolute; top: 780px; left: 90px; width: 820px;
+    color: rgba(240,230,205,0.82); font-weight: 400; font-size: 25px; line-height: 1.5;
+  }
+
+  .cta { position: absolute; bottom: 96px; left: 0; width: 1080px; text-align: center; }
+  .cta .pill {
+    display: inline-block; padding: 20px 46px; border: 1.5px solid #c59d4f; border-radius: 40px;
+    color: #f3e6c8; font-weight: 500; font-size: 26px; letter-spacing: 1px;
+  }
+
+  .handle {
+    position: absolute; bottom: 44px; left: 0; width: 1080px; text-align: center;
+    color: rgba(216,178,94,0.55); font-weight: 400; font-size: 20px; letter-spacing: 3px;
+  }
+</style>
+</head>
+<body>
+  <div class="canvas">
+    <img class="bg" src="bg-reconciliacao.jpg">
+    <div class="shade-top"></div>
+    <div class="shade-bottom"></div>
+
+    <div class="brand"><span class="cross">✝</span>ÂNCORA DA ALMA<span class="cross">✝</span></div>
+    <div class="verse-tag">MATEUS 18:22</div>
+
+    <div class="hook">Ela jurou que<br>não ia perdoar.<br><span class="accent">Hoje é madrinha do filho dele.</span></div>
+
+    <div class="divider"></div>
+    <div class="subtext">Pedro perguntou quantas vezes devia perdoar.<br>Jesus respondeu: 70 vezes 7. Ela decidiu<br>parar de contar.</div>
+
+    <div class="cta"><span class="pill">Marque quem precisa perdoar hoje</span></div>
+    <div class="handle">@ancoradealma</div>
+
+    <div class="frame"></div>
+  </div>
+</body>
+</html>
